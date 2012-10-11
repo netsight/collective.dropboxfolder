@@ -41,6 +41,7 @@ setup(name='collective.dropboxfolder',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
+          'dropbox',
       ],
       extras_require={'test': ['plone.app.testing']},
       entry_points="""
@@ -48,6 +49,6 @@ setup(name='collective.dropboxfolder',
       [z3c.autoinclude.plugin]
       target = plone
       """,
-      setup_requires=["PasteScript"],
-      paster_plugins=["templer.localcommands"],
+      setup_requires=[],
+      paster_plugins=[],
       )
