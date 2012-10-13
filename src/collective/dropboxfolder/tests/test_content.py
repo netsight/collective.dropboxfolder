@@ -6,10 +6,10 @@ from plone.dexterity.utils import createContentInContainer
 from collective.dropboxfolder.testing import\
     COLLECTIVE_DROPBOXFOLDER_INTEGRATION
 
-DROPBOX_FOLDER_TYPE = 'collective.dropboxfolder.dropbox_folder'
-DROPBOX_FILE_TYPE = 'collective.dropboxfolder.dropbox_file'
+from collective.dropboxfolder.content.config import DROPBOX_FOLDER_TYPE
+from collective.dropboxfolder.content.config import DROPBOX_FILE_TYPE
 
-class TestDropboxAuth(unittest.TestCase):
+class TestDropboxContent(unittest.TestCase):
 
     layer = COLLECTIVE_DROPBOXFOLDER_INTEGRATION
 

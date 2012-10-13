@@ -15,4 +15,6 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <!--<utility factory=".tests.mocks.mockbox.Mockbox"/>-->
+
 </configure>
