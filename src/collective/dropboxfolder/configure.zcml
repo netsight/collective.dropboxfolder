@@ -18,4 +18,6 @@
 
   <include package=".browser" />
 
+  <utility factory=".utilities.DropboxAuth" />
+
 </configure>
