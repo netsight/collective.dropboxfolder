@@ -13,28 +13,4 @@
      permission="cmf.ManagePortal"
      />
 
-  <browser:page
-     for="*"
-     name="generate_access_token"
-     class=".views.Dropbox"
-     attribute="generate_access_token"
-     permission="cmf.ManagePortal"
-     />
-
-  <browser:page
-     for="*"
-     name="client_info"
-     class=".views.Dropbox"
-     attribute="client_info"
-     permission="cmf.ManagePortal"
-     />
-
-  <browser:page
-     for="*"
-     name="sync_files"
-     class=".views.Dropbox"
-     attribute="sync_files"
-     permission="cmf.ManagePortal"
-     />
-
 </configure>
