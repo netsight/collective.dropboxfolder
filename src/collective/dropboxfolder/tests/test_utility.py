@@ -1,8 +1,6 @@
 import unittest2 as unittest
 from zope.component import getUtility
 
-from Products.CMFCore.utils import getToolByName
-
 from collective.dropboxfolder.testing import\
     COLLECTIVE_DROPBOXFOLDER_INTEGRATION
 from collective.dropboxfolder.interfaces import IDropboxAuth
