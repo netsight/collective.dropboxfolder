@@ -215,6 +215,77 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(1230, metadata['bytes'])
         self.assertEqual('362e', metadata['rev'])
 
+    
+    def test_single_file_update(self):
+        container = self.portal
+
+        metadata1 = json.loads("""
+            {
+               "bytes": 1230,
+               "icon": "page_white_text",
+               "is_dir": false,
+               "mime_type": "text/plain",
+               "modified": "Wed, 20 Jul 2011 22:04:50 +0000",
+               "path": "/Somewhere_over_the_rainbow.txt",
+               "rev": "362e",
+               "revision": 221922,
+               "root": "dropbox",
+               "size": "1230 bytes",
+               "thumb_exists": false
+           }
+        """)
+
+        metadata2 = json.loads("""
+            {
+               "bytes": 1235,
+               "icon": "page_white_text",
+               "is_dir": false,
+               "mime_type": "text/plain",
+               "modified": "Wed, 20 Jul 2011 22:04:50 +0000",
+               "path": "/Somewhere_over_the_rainbow.txt",
+               "rev": "362f",
+               "revision": 221962,
+               "root": "dropbox",
+               "size": "1235 bytes",
+               "thumb_exists": false
+           }
+        """)
+
+        sync_data = {
+                "entries": [
+                    [metadata1['path'], metadata1],
+                    [metadata2['path'], metadata2],
+                    ],
+                "reset": False,
+                "cursor": "1",
+                "has_more": False,
+                }
+
+        self.sync.delta_response.append(sync_data)
+
+        container = self.portal
+        container_fti = container.getTypeInfo()
+    
+        if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
+            raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
+        
+        ob = createContentInContainer(container,
+                                      DROPBOX_FOLDER_TYPE,
+                                      checkConstraints=False,
+                                      id="dropboxfolder",
+                                      )
+
+        processor = IDropboxSyncProcessor(ob)
+        processor.sync()
+
+        self.assertEqual(1, len(ob))
+
+        self.assertIsNotNone(ob.get("somewhere_over_the_rainbow.txt", None))
+        metadata = IDropboxMetadata(ob['somewhere_over_the_rainbow.txt']).get()
+        self.assertIsNotNone(metadata)
+        self.assertEqual(1235, metadata['bytes'])
+        self.assertEqual('362f', metadata['rev'])
+
 
 
 

@@ -59,17 +59,28 @@ class DropboxSyncProcessor(object):
             folders = path[:-1]
             filename = path[-1]
 
-            container_fti = container.getTypeInfo()
-        
-            if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
-                raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
-            
-            ob = createContentInContainer(container,
-                                          DROPBOX_FILE_TYPE,
-                                          checkConstraints=False,
-                                          id=normalize(filename),
-                                          )
+            plone_id = normalize(filename)
 
+            existing = None
+            if plone_id in container:
+                candidate = container[plone_id]
+                metadata = IDropboxMetadata(candidate).get()
+                if metadata['path'] == entry[0]:
+                    existing = candidate # not actually correct
+
+            if existing is None:
+                container_fti = container.getTypeInfo()
+                if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
+                    raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
+                ob = createContentInContainer(container,
+                                              DROPBOX_FILE_TYPE,
+                                              checkConstraints=False,
+                                              id=normalize(filename),
+                                              )
+            else:
+                ob = existing
+
+            # Update the metadata
             IDropboxMetadata(ob).set(entry[1])
 
 
