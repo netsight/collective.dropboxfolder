@@ -3,3 +3,4 @@ parts/*
 .installed.cfg
 bin/*
 develop-eggs/*
+var/*
