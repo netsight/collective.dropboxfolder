@@ -14,3 +14,7 @@ class IDropboxAuth(Interface):
 
     def account_info():
         """ look up the account information we are linked to """
+
+    def unlink():
+        """ unlink from a dropbox account """
+
