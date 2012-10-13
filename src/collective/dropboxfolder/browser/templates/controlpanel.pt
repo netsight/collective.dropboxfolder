@@ -1,0 +1,50 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+  <body>
+
+    <metal:main fill-slot="prefs_configlet_content">
+
+      <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+        Portal status message
+      </div>
+
+      <div id="content"
+           tal:define="is_linked view/is_linked">
+
+        <h1>Dropbox Folder</h1>
+
+        <tal:notlinked condition="not: is_linked">
+
+          <p>Please visit this URL and press the 'Allow' button:</p>
+
+          <p>
+            <a tal:attributes="href view/auth_url">Authorize collective.dropboxfolder</a>
+          </p>
+
+        </tal:notlinked>
+
+        <tal:linked condition="is_linked">
+
+          <p>Linked to:</p>
+
+          <p tal:content="view/account_info" />
+
+
+          <p>
+            <a tal:attributes="href string:${context/absolute_url}/${view/__name__}?unlink=1">Unlink</a>
+          </p>
+        </tal:linked>
+
+      </div>
+
+    </metal:main>
+
+  </body>
+</html>
+

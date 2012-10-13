@@ -3,6 +3,16 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="sectionview">
 
+  <include package="Products.CMFCore" file="permissions.zcml" />
+
+  <browser:page
+     name="dropboxfolder-controlpanel"
+     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+     class=".controlpanel.ControlPanel"
+     template="templates/controlpanel.pt"
+     permission="cmf.ManagePortal"
+     />
+
   <browser:page
      for="*"
      name="generate_access_token"
