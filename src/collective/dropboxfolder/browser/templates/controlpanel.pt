@@ -33,8 +33,9 @@
 
           <p>Linked to:</p>
 
-          <p tal:content="view/account_info" />
-
+          <p tal:define="info view/account_info">
+            <strong tal:content="info/display_name" />
+          </p>
 
           <p>
             <a tal:attributes="href string:${context/absolute_url}/${view/__name__}?unlink=1">Unlink</a>

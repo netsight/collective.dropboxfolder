@@ -53,4 +53,5 @@ class ControlPanel(BrowserView):
         return self.auth.is_linked()
 
     def account_info(self):
-        return self.auth.account_info()
+        info = self.auth.account_info()
+        return info
