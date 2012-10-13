@@ -15,17 +15,45 @@
       </div>
 
       <div id="content"
-           tal:define="is_linked view/is_linked">
+           tal:define="app_secret view/app_secret;
+                       is_linked view/is_linked">
 
         <h1>Dropbox Folder</h1>
 
+        <form method="post">
+          <div class="field">
+            <p>
+              <label for="app_secret">App Secret</label>
+              <br />
+              <tal:description condition="not:app_secret">
+                <span class="discreet">
+                  You must provide the App Secret before you can
+                  link this to a dropbox account.
+                </span>
+                <br />
+              </tal:description>
+              <input type="text" name="app_secret" id="app_secret"
+                     tal:attributes="value view/app_secret" />
+            </p>
+            <p>
+              <input class="context" type="submit" value="Update app secret" />
+            </p>
+          </div>
+        </form>
+
         <tal:notlinked condition="not: is_linked">
+          <tal:block define="auth_url view/auth_url"
+                     condition="auth_url">
+            <p>
+              <strong>Authorisation required</strong>
+            </p>
 
-          <p>Please visit this URL and press the 'Allow' button:</p>
+            <p>Please visit this URL to authorise collective.dropbox to access your Dropbox account:</p>
 
-          <p>
-            <a tal:attributes="href view/auth_url">Authorize collective.dropboxfolder</a>
-          </p>
+            <p>
+              <a tal:attributes="href auth_url">Authorize collective.dropboxfolder</a>
+            </p>
+          </tal:block>
 
         </tal:notlinked>
 
@@ -40,6 +68,7 @@
           <p>
             <a tal:attributes="href string:${context/absolute_url}/${view/__name__}?unlink=1">Unlink</a>
           </p>
+
         </tal:linked>
 
       </div>
