@@ -1,4 +1,3 @@
-
 import json
 
 import unittest2 as unittest
@@ -18,6 +17,7 @@ from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
 DROPBOX_FOLDER_TYPE = "collective.dropboxfolder.dropbox_folder"
 DROPBOX_FILE_TYPE = "collective.dropboxfolder.dropbox_file"
 
+
 class TestDropboxSync(unittest.TestCase):
 
     layer = COLLECTIVE_DROPBOXFOLDER_INTEGRATION
@@ -30,7 +30,6 @@ class TestDropboxSync(unittest.TestCase):
         gsm = getGlobalSiteManager()
         self.sync = Mockbox()
         gsm.registerUtility(self.sync, IDropboxSync)
-
 
     def test_new_file(self):
         container = self.portal
@@ -64,10 +63,10 @@ class TestDropboxSync(unittest.TestCase):
 
         container = self.portal
         container_fti = container.getTypeInfo()
-    
+
         if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
             raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
-        
+
         ob = createContentInContainer(container,
                                       DROPBOX_FOLDER_TYPE,
                                       checkConstraints=False,
@@ -117,10 +116,10 @@ class TestDropboxSync(unittest.TestCase):
 
         container = self.portal
         container_fti = container.getTypeInfo()
-    
+
         if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
             raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
-        
+
         ob = createContentInContainer(container,
                                       DROPBOX_FOLDER_TYPE,
                                       checkConstraints=False,
@@ -138,7 +137,6 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(77, metadata['bytes'])
         self.assertEqual('362e2029684fe', metadata['rev'])
 
-    
     def test_multiple_files(self):
         container = self.portal
 
@@ -188,10 +186,10 @@ class TestDropboxSync(unittest.TestCase):
 
         container = self.portal
         container_fti = container.getTypeInfo()
-    
+
         if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
             raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
-        
+
         ob = createContentInContainer(container,
                                       DROPBOX_FOLDER_TYPE,
                                       checkConstraints=False,
@@ -215,7 +213,6 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(1230, metadata['bytes'])
         self.assertEqual('362e', metadata['rev'])
 
-    
     def test_single_file_update(self):
         container = self.portal
 
@@ -265,10 +262,10 @@ class TestDropboxSync(unittest.TestCase):
 
         container = self.portal
         container_fti = container.getTypeInfo()
-    
+
         if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
             raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
-        
+
         ob = createContentInContainer(container,
                                       DROPBOX_FOLDER_TYPE,
                                       checkConstraints=False,
@@ -285,9 +282,4 @@ class TestDropboxSync(unittest.TestCase):
         self.assertIsNotNone(metadata)
         self.assertEqual(1235, metadata['bytes'])
         self.assertEqual('362f', metadata['rev'])
-
-
-
-
-
 
