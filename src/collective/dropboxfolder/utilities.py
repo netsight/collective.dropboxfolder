@@ -60,3 +60,4 @@ class DropboxAuth(object):
         box = self._box()
         boxclient = client.DropboxClient(box)
         return boxclient.account_info()
+

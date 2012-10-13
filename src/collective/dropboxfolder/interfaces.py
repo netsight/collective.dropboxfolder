@@ -18,3 +18,29 @@ class IDropboxAuth(Interface):
     def unlink():
         """ unlink from a dropbox account """
 
+class IDropboxSync(Interface):
+
+    def delta():
+        """ Get the list of changes from the linked dropbox """
+
+    def get_file():
+        """ Get a file's data from dropbox """
+
+    def put_file():
+        """ Put a files data to dropbox """
+
+class IDropboxSyncProcessor(Interface):
+
+    def sync():
+        """ Connect to dropbox and work out what to do to sync the folder """
+
+
+
+class IDropboxMetadata(Interface):
+
+    def get():
+        """ Get the dropbox metadata for an object as a dict """
+
+    def set(value):
+        """ Set the dropbox metadata for an object """
+
