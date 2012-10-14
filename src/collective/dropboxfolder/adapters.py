@@ -3,6 +3,8 @@ from zope.interface import implements
 from zope.component import adapts
 from zope.component import getUtility
 
+from BTrees import OOBTree
+
 from zope.annotation import IAnnotations
 from plone.i18n.normalizer.interfaces import IURLNormalizer
 
@@ -50,7 +52,7 @@ class DropboxSyncMetadata(object):
 
     def _storage(self):
         annotations = IAnnotations(self.context)
-        return annotations.get(SYNC_METADATA_KEY, 
+        return annotations.get(SYNC_METADATA_KEY, OOBTree)
 
     def delta_cursor(self):
         pass
