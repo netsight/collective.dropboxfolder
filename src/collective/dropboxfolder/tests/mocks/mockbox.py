@@ -1,5 +1,5 @@
 from collections import deque
-import json
+import simplejson as json
 
 from zope import interface
 
@@ -20,13 +20,13 @@ class Mockbox(object):
     get_file_response = deque()
     put_file_response = deque()
 
-    def delta(self, cursor):
+    def delta(self, cursor=None):
         # This makes sure we get something most similar to the json
-        # decoding - unicode strings all round and so on.
+        # decoding produced by dropbox client
         return json.loads(json.dumps(self.delta_response.popleft()))
 
     def get_file(self, from_path, rev=None):
         return self.get_file_response.popleft()
 
-    def put_file(self):
+    def put_file(self, full_path, file_obj, overwrite=False, parent_rev=None):
         return self.put_file_response.popleft()

@@ -4,6 +4,7 @@ from cStringIO import StringIO
 import unittest2 as unittest
 from zope.component import getUtility
 from zope.component import getGlobalSiteManager
+from zope.interface.verify import verifyObject
 
 from plone.dexterity.utils import createContentInContainer
 
@@ -41,6 +42,12 @@ class TestDropboxSync(unittest.TestCase):
         gsm.unregisterUtility(self.client, IDropboxClient)
         # re-add the original
         gsm.registerUtility(self.old_client, IDropboxClient)
+
+    def test_mock_utility(self):
+        client = getUtility(IDropboxClient)
+        # check it has been registered correctly
+        self.assertTrue(isinstance(client, Mockbox))
+        self.assertTrue(verifyObject(IDropboxClient, client))
 
     def test_new_file(self):
         container = self.portal
