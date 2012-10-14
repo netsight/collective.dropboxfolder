@@ -6,10 +6,10 @@ class IDropboxAuth(Interface):
     def is_linked():
         """ are we currently linked to a dropbox account?"""
 
-    def build_authorize_url():
+    def build_authorize_url(callback_url=None):
         """ get an authorizing url for linking to dropbox """
 
-    def obtain_access_token():
+    def obtain_access_token(token, verification_code):
         """ get and store the access token for linking to dropbox """
 
     def account_info():
@@ -18,16 +18,19 @@ class IDropboxAuth(Interface):
     def unlink():
         """ unlink from a dropbox account """
 
+    def get_client():
+        """ get a dropbox client """
+
 
 class IDropboxClient(Interface):
 
-    def delta():
+    def delta(cursor=None):
         """ Get the list of changes from the linked dropbox """
 
-    def get_file():
+    def get_file(from_path, rev=None):
         """ Get a file's data from dropbox """
 
-    def put_file():
+    def put_file(full_path, file_obj, overwrite=False, parent_rev=None):
         """ Put a files data to dropbox """
 
 
