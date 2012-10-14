@@ -62,7 +62,7 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    ["/magnum-opus.txt", metadata],
+                    ["/magnum-opus.txt".lower(), metadata],
                     ],
                 "reset": False,
                 "cursor": "1",
@@ -115,7 +115,7 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    ["/a-long-and-mysterious-filename", metadata],
+                    ["/a-long-and-mysterious-filename".lower(), metadata],
                     ],
                 "reset": False,
                 "cursor": "1",
@@ -184,8 +184,8 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    [metadata1['path'], metadata1],
-                    [metadata2['path'], metadata2],
+                    [metadata1['path'].lower(), metadata1],
+                    [metadata2['path'].lower(), metadata2],
                     ],
                 "reset": False,
                 "cursor": "1",
@@ -260,8 +260,8 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    [metadata1['path'], metadata1],
-                    [metadata2['path'], metadata2],
+                    [metadata1['path'].lower(), metadata1],
+                    [metadata2['path'].lower(), metadata2],
                     ],
                 "reset": False,
                 "cursor": "1",
@@ -304,7 +304,7 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    ['/Somewhere_over_the_rainbow.txt', None],
+                    ['/Somewhere_over_the_rainbow.txt'.lower(), None],
                     ],
                 "reset": False,
                 "cursor": "3",
@@ -318,7 +318,7 @@ class TestDropboxSync(unittest.TestCase):
 
         sync_data = {
                 "entries": [
-                    ['/magnum-opus.txt', None],
+                    ['/magnum-opus.txt'.lower(), None],
                     ],
                 "reset": False,
                 "cursor": "3",
