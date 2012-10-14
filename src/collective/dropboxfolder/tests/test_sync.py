@@ -11,7 +11,7 @@ from collective.dropboxfolder.testing import\
 
 from collective.dropboxfolder.tests.mocks.mockbox import Mockbox
 from collective.dropboxfolder.interfaces import IDropboxClient
-from collective.dropboxfolder.interfaces import IDropboxMetadata
+from collective.dropboxfolder.interfaces import IDropboxFileMetadata
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
 
 DROPBOX_FOLDER_TYPE = "collective.dropboxfolder.dropbox_folder"
@@ -79,7 +79,7 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(1, len(ob))
         self.assertIsNotNone(ob.get("magnum-opus.txt", None))
 
-        metadata = IDropboxMetadata(ob['magnum-opus.txt']).get()
+        metadata = IDropboxFileMetadata(ob['magnum-opus.txt']).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(77, metadata['bytes'])
         self.assertEqual('362e2029684fe', metadata['rev'])
@@ -132,7 +132,7 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(1, len(ob))
         self.assertIsNotNone(ob.get("a-long-and-mysterious-filename", None))
 
-        metadata = IDropboxMetadata(ob['a-long-and-mysterious-filename']).get()
+        metadata = IDropboxFileMetadata(ob['a-long-and-mysterious-filename']).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(77, metadata['bytes'])
         self.assertEqual('362e2029684fe', metadata['rev'])
@@ -202,13 +202,13 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(2, len(ob))
 
         self.assertIsNotNone(ob.get("magnum-opus.txt", None))
-        metadata = IDropboxMetadata(ob['magnum-opus.txt']).get()
+        metadata = IDropboxFileMetadata(ob['magnum-opus.txt']).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(77, metadata['bytes'])
         self.assertEqual('362e2029684fe', metadata['rev'])
 
         self.assertIsNotNone(ob.get("somewhere_over_the_rainbow.txt", None))
-        metadata = IDropboxMetadata(ob['somewhere_over_the_rainbow.txt']).get()
+        metadata = IDropboxFileMetadata(ob['somewhere_over_the_rainbow.txt']).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(1230, metadata['bytes'])
         self.assertEqual('362e', metadata['rev'])
@@ -278,7 +278,7 @@ class TestDropboxSync(unittest.TestCase):
         self.assertEqual(1, len(ob))
 
         self.assertIsNotNone(ob.get("somewhere_over_the_rainbow.txt", None))
-        metadata = IDropboxMetadata(ob['somewhere_over_the_rainbow.txt']).get()
+        metadata = IDropboxFileMetadata(ob['somewhere_over_the_rainbow.txt']).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(1235, metadata['bytes'])
         self.assertEqual('362f', metadata['rev'])
