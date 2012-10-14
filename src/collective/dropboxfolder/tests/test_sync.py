@@ -10,7 +10,7 @@ from collective.dropboxfolder.testing import\
     COLLECTIVE_DROPBOXFOLDER_INTEGRATION
 
 from collective.dropboxfolder.tests.mocks.mockbox import Mockbox
-from collective.dropboxfolder.interfaces import IDropboxSync
+from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.interfaces import IDropboxMetadata
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
 
@@ -28,8 +28,8 @@ class TestDropboxSync(unittest.TestCase):
 
         # Override the default sync utility
         gsm = getGlobalSiteManager()
-        self.sync = Mockbox()
-        gsm.registerUtility(self.sync, IDropboxSync)
+        self.client = Mockbox()
+        gsm.registerUtility(self.client, IDropboxClient)
 
     def test_new_file(self):
         container = self.portal
@@ -59,7 +59,7 @@ class TestDropboxSync(unittest.TestCase):
                 "has_more": False,
                 }
 
-        self.sync.delta_response.append(sync_data)
+        self.client.delta_response.append(sync_data)
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -112,7 +112,7 @@ class TestDropboxSync(unittest.TestCase):
                 "has_more": False,
                 }
 
-        self.sync.delta_response.append(sync_data)
+        self.client.delta_response.append(sync_data)
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -182,7 +182,7 @@ class TestDropboxSync(unittest.TestCase):
                 "has_more": False,
                 }
 
-        self.sync.delta_response.append(sync_data)
+        self.client.delta_response.append(sync_data)
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -258,7 +258,7 @@ class TestDropboxSync(unittest.TestCase):
                 "has_more": False,
                 }
 
-        self.sync.delta_response.append(sync_data)
+        self.client.delta_response.append(sync_data)
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -282,4 +282,3 @@ class TestDropboxSync(unittest.TestCase):
         self.assertIsNotNone(metadata)
         self.assertEqual(1235, metadata['bytes'])
         self.assertEqual('362f', metadata['rev'])
-

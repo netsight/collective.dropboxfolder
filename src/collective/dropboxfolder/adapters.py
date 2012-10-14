@@ -4,13 +4,13 @@ from zope.component import adapts
 from zope.component import getUtility
 
 from zope.annotation import IAnnotations
-from plone.i18n.normalizer.interfaces import IURLNormalizer 
+from plone.i18n.normalizer.interfaces import IURLNormalizer
 
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.utils import createContentInContainer
 
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
-from collective.dropboxfolder.interfaces import IDropboxSync
+from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.interfaces import IDropboxMetadata
 from collective.dropboxfolder.content.dropbox_folder import IDropboxFolder
 from collective.dropboxfolder.content.config import DROPBOX_FOLDER_TYPE
@@ -20,7 +20,7 @@ METADATA_KEY = "collective.dropboxfolder.metadata"
 
 
 class DropboxMetadata(object):
-    
+
     implements(IDropboxMetadata)
     adapts(IDexterityContent)
 
@@ -32,13 +32,13 @@ class DropboxMetadata(object):
         return annotations.get(METADATA_KEY, None)
 
     def set(self, value):
-        assert(isinstance(value,dict))
+        assert(isinstance(value, dict))
         annotations = IAnnotations(self.context)
         annotations[METADATA_KEY] = value
 
 
 class DropboxSyncProcessor(object):
-    
+
     implements(IDropboxSyncProcessor)
     adapts(IDropboxFolder)
 
@@ -46,7 +46,7 @@ class DropboxSyncProcessor(object):
         self.context = context
 
     def sync(self):
-        connector = getUtility(IDropboxSync)
+        connector = getUtility(IDropboxClient)
 
         normalize = getUtility(IURLNormalizer).normalize
         container = self.context
@@ -82,6 +82,3 @@ class DropboxSyncProcessor(object):
 
             # Update the metadata
             IDropboxMetadata(ob).set(entry[1])
-
-
-
