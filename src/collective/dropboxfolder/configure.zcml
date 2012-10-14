@@ -26,6 +26,7 @@
     <utility factory=".utilities.DropboxAuth" />
 
     <adapter factory=".adapters.DropboxSyncProcessor" />
-    <adapter factory=".adapters.DropboxMetadata" />
+    <adapter factory=".adapters.DropboxSyncMetadata" />
+    <adapter factory=".adapters.DropboxFileMetadata" />
 
 </configure>
