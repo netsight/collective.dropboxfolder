@@ -18,7 +18,8 @@ from collective.dropboxfolder.content.dropbox_folder import IDropboxFolder
 from collective.dropboxfolder.content.config import DROPBOX_FOLDER_TYPE
 from collective.dropboxfolder.content.config import DROPBOX_FILE_TYPE
 
-METADATA_KEY = "collective.dropboxfolder.metadata"
+FILE_METADATA_KEY = "collective.dropboxfolder.metadata"
+SYNC_METADATA_KEY = "collective.dropboxfolder.metadata"
 
 
 class DropboxFileMetadata(object):
@@ -31,12 +32,12 @@ class DropboxFileMetadata(object):
 
     def get(self):
         annotations = IAnnotations(self.context)
-        return annotations.get(METADATA_KEY, None)
+        return annotations.get(FILE_METADATA_KEY, None)
 
     def set(self, value):
         assert(isinstance(value,dict))
         annotations = IAnnotations(self.context)
-        annotations[METADATA_KEY] = value
+        annotations[FILE_METADATA_KEY] = value
 
 
 class DropboxSyncMetadata(object):
@@ -46,6 +47,10 @@ class DropboxSyncMetadata(object):
 
     def __init__(self, context):
         self.context = context
+
+    def _storage(self):
+        annotations = IAnnotations(self.context)
+        return annotations.get(SYNC_METADATA_KEY, 
 
     def delta_cursor(self):
         pass
