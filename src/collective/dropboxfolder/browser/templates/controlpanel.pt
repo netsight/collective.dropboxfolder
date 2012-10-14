@@ -63,6 +63,7 @@
 
           <p tal:define="info view/account_info">
             <strong tal:content="info/display_name" />
+            (<span tal:content="info/email" />)
           </p>
 
           <p>
