@@ -4,14 +4,14 @@ from zope.component import adapts
 from zope.component import getUtility
 
 from zope.annotation import IAnnotations
-from plone.i18n.normalizer.interfaces import IURLNormalizer 
+from plone.i18n.normalizer.interfaces import IURLNormalizer
 
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.utils import createContentInContainer
 
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
-from collective.dropboxfolder.interfaces import IDropboxSync
+from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.interfaces import IDropboxSyncMetadata
 from collective.dropboxfolder.interfaces import IDropboxFileMetadata
 from collective.dropboxfolder.content.dropbox_folder import IDropboxFolder
@@ -23,7 +23,7 @@ SYNC_METADATA_KEY = "collective.dropboxfolder.metadata"
 
 
 class DropboxFileMetadata(object):
-    
+
     implements(IDropboxFileMetadata)
     adapts(IDexterityContent)
 
@@ -35,13 +35,13 @@ class DropboxFileMetadata(object):
         return annotations.get(FILE_METADATA_KEY, None)
 
     def set(self, value):
-        assert(isinstance(value,dict))
+        assert(isinstance(value, dict))
         annotations = IAnnotations(self.context)
         annotations[FILE_METADATA_KEY] = value
 
 
 class DropboxSyncMetadata(object):
-    
+
     implements(IDropboxSyncMetadata)
     adapts(IDexterityContainer)
 
@@ -60,7 +60,7 @@ class DropboxSyncMetadata(object):
 
 
 class DropboxSyncProcessor(object):
-    
+
     implements(IDropboxSyncProcessor)
     adapts(IDexterityContainer)
 
@@ -68,7 +68,7 @@ class DropboxSyncProcessor(object):
         self.context = context
 
     def sync(self):
-        connector = getUtility(IDropboxSync)
+        connector = getUtility(IDropboxClient)
 
         normalize = getUtility(IURLNormalizer).normalize
         container = self.context
@@ -76,7 +76,7 @@ class DropboxSyncProcessor(object):
         delta = connector.delta()
 
         entries = delta.get('entries', [])
-        for path,metadata in entries:
+        for path, metadata in entries:
             exploded_path = [x for x in path.split('/') if x]
             folders = exploded_path[:-1]
             filename = exploded_path[-1]
@@ -107,6 +107,3 @@ class DropboxSyncProcessor(object):
 
             # Update the metadata with the latest
             IDropboxFileMetadata(ob).set(metadata)
-
-
-

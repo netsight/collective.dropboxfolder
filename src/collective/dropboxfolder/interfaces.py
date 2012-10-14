@@ -19,7 +19,7 @@ class IDropboxAuth(Interface):
         """ unlink from a dropbox account """
 
 
-class IDropboxSync(Interface):
+class IDropboxClient(Interface):
 
     def delta():
         """ Get the list of changes from the linked dropbox """
@@ -57,4 +57,3 @@ class IDropboxSyncMetadata(Interface):
 
     def set_delta_cursor():
         """ Set the delta cursor for a container. """
-
