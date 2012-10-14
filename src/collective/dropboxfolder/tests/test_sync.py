@@ -15,6 +15,7 @@ from collective.dropboxfolder.tests.mocks.mockbox import Mockbox
 from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.interfaces import IDropboxFileMetadata
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
+from collective.dropboxfolder.content.dropbox_file import IDropboxFile
 
 DROPBOX_FOLDER_TYPE = "collective.dropboxfolder.dropbox_folder"
 DROPBOX_FILE_TYPE = "collective.dropboxfolder.dropbox_file"
@@ -51,6 +52,7 @@ class TestDropboxSync(unittest.TestCase):
 
     def test_new_file(self):
         container = self.portal
+        test_file_content = "Mary had a little lamb"
 
         metadata = json.loads("""
             {
@@ -69,39 +71,47 @@ class TestDropboxSync(unittest.TestCase):
         """)
 
         sync_data = {
-                "entries": [
-                    ["/magnum-opus.txt".lower(), metadata],
-                    ],
-                "reset": False,
-                "cursor": "1",
-                "has_more": False,
-                }
+            "entries": [
+                ["/magnum-opus.txt".lower(), metadata],
+            ],
+            "reset": False,
+            "cursor": "1",
+            "has_more": False,
+        }
 
         self.client.delta_response.append(sync_data)
-        self.client.get_file_response.append(StringIO())
+        self.client.get_file_response.append(StringIO(test_file_content))
 
         container = self.portal
         container_fti = container.getTypeInfo()
 
-        if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
-            raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
+        if container_fti is not None \
+               and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
+            raise ValueError(
+                "Disallowed subobject type: %s" % (
+                    DROPBOX_FOLDER_TYPE,))
 
-        ob = createContentInContainer(container,
-                                      DROPBOX_FOLDER_TYPE,
-                                      checkConstraints=False,
-                                      id="dropboxfolder",
-                                      )
+        folder = createContentInContainer(container,
+                                          DROPBOX_FOLDER_TYPE,
+                                          checkConstraints=False,
+                                          id="dropboxfolder",
+                                          )
 
-        processor = IDropboxSyncProcessor(ob)
+        processor = IDropboxSyncProcessor(folder)
         processor.sync()
 
-        self.assertEqual(1, len(ob))
-        self.assertIsNotNone(ob.get("magnum-opus.txt", None))
+        self.assertEqual(1, len(folder))
+        self.assertIsNotNone(folder.get("magnum-opus.txt", None))
 
-        metadata = IDropboxFileMetadata(ob['magnum-opus.txt']).get()
+        thefile = folder['magnum-opus.txt']
+        metadata = IDropboxFileMetadata(thefile).get()
         self.assertIsNotNone(metadata)
         self.assertEqual(77, metadata['bytes'])
         self.assertEqual('362e2029684fe', metadata['rev'])
+
+        self.assertTrue(IDropboxFile.providedBy(thefile))
+        self.assertEqual(thefile.file_data.data,
+                         test_file_content)
 
     def test_odd_filename(self):
         container = self.portal
