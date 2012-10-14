@@ -5,6 +5,7 @@ from zope.interface.verify import verifyObject
 from collective.dropboxfolder.testing import\
     COLLECTIVE_DROPBOXFOLDER_INTEGRATION
 from collective.dropboxfolder.interfaces import IDropboxAuth
+from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.utilities import DropboxAuthException
 
 
@@ -45,3 +46,12 @@ class TestDropboxAuth(unittest.TestCase):
         self.assertFalse(
             auth.obtain_access_token('token', 'code')
         )
+
+
+class TestDropboxClient(unittest.TestCase):
+
+    layer = COLLECTIVE_DROPBOXFOLDER_INTEGRATION
+
+    def test_client_interface(self):
+        dropclient = getUtility(IDropboxClient)
+        self.assertTrue(verifyObject(IDropboxClient, dropclient))
