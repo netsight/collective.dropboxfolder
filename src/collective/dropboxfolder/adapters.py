@@ -61,6 +61,12 @@ class DropboxSyncProcessor(object):
 
             plone_id = normalize(filename)
 
+            if entry[1]['is_dir']: continue # skip directories for now
+            if folders: continue # support just one level for now
+
+            # TODO improve this check -- how to do efficiently as dropbox path may not contain
+            # URL safe characters so object may live in slightly different path in Plone to 
+            # Dropbox. We need to fix this anyway for path mapping
             existing = None
             if plone_id in container:
                 candidate = container[plone_id]
