@@ -13,4 +13,12 @@
      permission="cmf.ManagePortal"
      />
 
+  <browser:page
+     name="dropbox-sync"
+     for="collective.dropboxfolder.content.dropbox_folder.IDropboxFolder"
+     class=".views.SyncFolder"
+     attribute="sync_now"
+     permission="cmf.ModifyPortalContent"
+     />
+
 </configure>
