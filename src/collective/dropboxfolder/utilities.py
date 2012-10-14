@@ -18,9 +18,7 @@ class DropboxAuth(object):
 
     def _box(self):
         storage = getStorage()
-        app_secret = self.get_app_secret()
-        if not app_secret:
-            return None
+        app_secret = self.get_app_secret() or ''
 
         box = session.DropboxSession(APP_KEY, app_secret, ACCESS_TYPE)
         if storage.get('access_token'):
@@ -43,8 +41,6 @@ class DropboxAuth(object):
 
     def is_linked(self):
         box = self._box()
-        if box is None:
-            return False
         return box.is_linked()
 
     def build_authorize_url(self, callback_url=None):
@@ -65,12 +61,15 @@ class DropboxAuth(object):
     def obtain_access_token(self, token, verification_code):
         box = self._box()
         storage = getStorage()
-        request_token = storage['request_token']
-        if request_token.key != token:
+        request_token = storage.get('request_token')
+        if not request_token or request_token.key != token:
             return False
 
         box.set_request_token(request_token.key, request_token.secret)
-        access_token = box.obtain_access_token(request_token)
+        try:
+            access_token = box.obtain_access_token(request_token)
+        except rest.ErrorResponse as e:
+            raise DropboxAuthException(e)
         storage['access_token'] = access_token.key
         storage['access_token_secret'] = access_token.secret
         return True
