@@ -24,6 +24,7 @@
     <include package=".browser" />
 
     <utility factory=".utilities.DropboxAuth" />
+    <utility factory=".utilities.DropboxClient" />
 
     <adapter factory=".adapters.DropboxSyncProcessor" />
     <adapter factory=".adapters.DropboxSyncMetadata" />
