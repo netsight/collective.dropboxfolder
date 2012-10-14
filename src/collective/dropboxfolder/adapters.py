@@ -86,8 +86,13 @@ class DropboxSyncProcessor(object):
         delta = connector.delta(cursor)
 
         entries = delta.get('entries', [])
-        for path, metadata in entries:
-            exploded_path = [x for x in path.split('/') if x]
+        for lower_case_path, metadata in entries:
+
+            # The API says lower_case_path will always be lowercase, but we assume
+            # this below, so make sure this is the case incase the API changes.
+            lower_case_path = lower_case_path.lower()
+
+            exploded_path = [x for x in lower_case_path.split('/') if x]
             folders = exploded_path[:-1]
             filename = exploded_path[-1]
 
@@ -100,14 +105,14 @@ class DropboxSyncProcessor(object):
             for ob in container.objectValues():
                 md = IDropboxFileMetadata(ob).get()
                 if md is not None:
-                    existing[md['path']] = ob
+                    existing[md['path'].lower()] = ob
 
             if metadata is not None: # file has data
-                if path in existing:
-                    logger.info("DropboxSyncProcessor: Updating file for path %s", path)
-                    db_file = existing[path]
+                if lower_case_path in existing:
+                    logger.info("DropboxSyncProcessor: Updating file for path %s", lower_case_path)
+                    db_file = existing[lower_case_path]
                 else:
-                    logger.info("DropboxSyncProcessor: Creating file for path %s", path)
+                    logger.info("DropboxSyncProcessor: Creating file for path %s", lower_case_path)
                     plone_id = normalize(filename)
                     container_fti = container.getTypeInfo()
                     if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
@@ -121,8 +126,8 @@ class DropboxSyncProcessor(object):
                 # Update the metadata with the latest
                 IDropboxFileMetadata(db_file).set(metadata)
 
-            if metadata is None and path in existing: # file deleted
-                container.manage_delObjects( [existing[path].getId()] )
+            if metadata is None and lower_case_path in existing: # file deleted
+                container.manage_delObjects( [existing[lower_case_path].getId()] )
 
         IDropboxSyncMetadata(container).set_delta_cursor(delta['cursor'])
         logger.info("DropboxSyncProcessor: complete (new cursor: %s)", delta['cursor'])
