@@ -16,6 +16,7 @@ from collective.dropboxfolder.interfaces import IDropboxSyncMetadata
 from collective.dropboxfolder.tests.mocks.mockbox import Mockbox
 from collective.dropboxfolder.interfaces import IDropboxClient
 
+
 class TestDropboxSyncMetadata(unittest.TestCase):
 
     layer = COLLECTIVE_DROPBOXFOLDER_INTEGRATION
@@ -26,8 +27,18 @@ class TestDropboxSyncMetadata(unittest.TestCase):
 
         # Override the default sync utility
         gsm = getGlobalSiteManager()
+        self.old_client = getUtility(IDropboxClient)
+        gsm.unregisterUtility(self.old_client, IDropboxClient)
+        # Register our mocked version
         self.client = Mockbox()
         gsm.registerUtility(self.client, IDropboxClient)
+
+    def tearDown(self):
+        # remove our mocked utility
+        gsm = getGlobalSiteManager()
+        gsm.unregisterUtility(self.client, IDropboxClient)
+        # re-add the original
+        gsm.registerUtility(self.old_client, IDropboxClient)
 
     def test_delta_cursor_stored(self):
         container = self.portal
@@ -86,8 +97,3 @@ class TestDropboxSyncMetadata(unittest.TestCase):
         self.client.delta_response.append(sync_data)
         processor.sync()
         self.assertEqual("3", md.delta_cursor())
-
-
-
-
-
