@@ -51,6 +51,8 @@ class DropboxAuth(object):
             request_token = box.obtain_request_token()
         except rest.ErrorResponse as e:
             raise DropboxAuthException(e)
+        except rest.RESTSocketError as e:
+            raise DropboxAuthException(e)
 
         getStorage()['request_token'] = request_token
         try:
