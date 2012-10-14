@@ -28,7 +28,10 @@ class IDropboxClient(Interface):
         """ Get the list of changes from the linked dropbox """
 
     def get_file(from_path, rev=None):
-        """ Get a file's data from dropbox """
+        """
+        Get a file's data from dropbox
+        @return a file-like object
+        """
 
     def put_file(full_path, file_obj, overwrite=False, parent_rev=None):
         """ Put a files data to dropbox """
