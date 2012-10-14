@@ -18,6 +18,7 @@ class IDropboxAuth(Interface):
     def unlink():
         """ unlink from a dropbox account """
 
+
 class IDropboxSync(Interface):
 
     def delta():
@@ -29,11 +30,11 @@ class IDropboxSync(Interface):
     def put_file():
         """ Put a files data to dropbox """
 
+
 class IDropboxSyncProcessor(Interface):
 
     def sync():
         """ Connect to dropbox and work out what to do to sync the folder """
-
 
 
 class IDropboxMetadata(Interface):
@@ -43,4 +44,3 @@ class IDropboxMetadata(Interface):
 
     def set(value):
         """ Set the dropbox metadata for an object """
-
