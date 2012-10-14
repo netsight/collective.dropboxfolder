@@ -1,4 +1,5 @@
 from collections import deque
+import json
 
 from zope import interface
 
@@ -20,7 +21,9 @@ class Mockbox(object):
     put_file_response = deque()
 
     def delta(self, cursor):
-        return self.delta_response.popleft()
+        # This makes sure we get something most similar to the json
+        # decoding - unicode strings all round and so on.
+        return json.loads(json.dumps(self.delta_response.popleft()))
 
     def get_file(self):
         return self.get_file_response.popleft()
