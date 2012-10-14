@@ -34,7 +34,6 @@ class ControlPanel(BrowserView):
 
         elif 'oauth_token' in self.request.form:
             request_token = self.request.form.get('oauth_token')
-            print request_token
             verification_code = self.request.form.get('uid')
             success = self.auth.obtain_access_token(request_token,
                                                     verification_code)
