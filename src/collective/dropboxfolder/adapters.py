@@ -7,11 +7,13 @@ from zope.annotation import IAnnotations
 from plone.i18n.normalizer.interfaces import IURLNormalizer 
 
 from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.utils import createContentInContainer
 
 from collective.dropboxfolder.interfaces import IDropboxSyncProcessor
 from collective.dropboxfolder.interfaces import IDropboxSync
-from collective.dropboxfolder.interfaces import IDropboxMetadata
+from collective.dropboxfolder.interfaces import IDropboxSyncMetadata
+from collective.dropboxfolder.interfaces import IDropboxFileMetadata
 from collective.dropboxfolder.content.dropbox_folder import IDropboxFolder
 from collective.dropboxfolder.content.config import DROPBOX_FOLDER_TYPE
 from collective.dropboxfolder.content.config import DROPBOX_FILE_TYPE
@@ -19,9 +21,9 @@ from collective.dropboxfolder.content.config import DROPBOX_FILE_TYPE
 METADATA_KEY = "collective.dropboxfolder.metadata"
 
 
-class DropboxMetadata(object):
+class DropboxFileMetadata(object):
     
-    implements(IDropboxMetadata)
+    implements(IDropboxFileMetadata)
     adapts(IDexterityContent)
 
     def __init__(self, context):
@@ -37,10 +39,25 @@ class DropboxMetadata(object):
         annotations[METADATA_KEY] = value
 
 
+class DropboxSyncMetadata(object):
+    
+    implements(IDropboxSyncMetadata)
+    adapts(IDexterityContainer)
+
+    def __init__(self, context):
+        self.context = context
+
+    def delta_cursor(self):
+        pass
+
+    def set_delta_cursor(self):
+        pass
+
+
 class DropboxSyncProcessor(object):
     
     implements(IDropboxSyncProcessor)
-    adapts(IDropboxFolder)
+    adapts(IDexterityContainer)
 
     def __init__(self, context):
         self.context = context
@@ -66,7 +83,7 @@ class DropboxSyncProcessor(object):
             # the one level sync currently implemented.
             existing = dict()
             for ob in container.objectValues():
-                md = IDropboxMetadata(ob).get()
+                md = IDropboxFileMetadata(ob).get()
                 if md is not None:
                     existing[md['path']] = ob
 
@@ -84,7 +101,7 @@ class DropboxSyncProcessor(object):
                                               )
 
             # Update the metadata with the latest
-            IDropboxMetadata(ob).set(metadata)
+            IDropboxFileMetadata(ob).set(metadata)
 
 
 
