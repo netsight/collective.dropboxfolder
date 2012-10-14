@@ -22,7 +22,7 @@ class Mockbox(object):
     def delta(self, cursor):
         return self.delta_response.popleft()
 
-    def get_file(self):
+    def get_file(self, from_path, rev=None):
         return self.get_file_response.popleft()
 
     def put_file(self):
