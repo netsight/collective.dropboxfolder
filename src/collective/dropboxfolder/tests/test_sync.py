@@ -1,4 +1,5 @@
 import json
+from cStringIO import StringIO
 
 import unittest2 as unittest
 from zope.component import getUtility
@@ -70,6 +71,7 @@ class TestDropboxSync(unittest.TestCase):
                 }
 
         self.client.delta_response.append(sync_data)
+        self.client.get_file_response.append(StringIO())
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -123,6 +125,7 @@ class TestDropboxSync(unittest.TestCase):
                 }
 
         self.client.delta_response.append(sync_data)
+        self.client.get_file_response.append(StringIO())
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -193,6 +196,9 @@ class TestDropboxSync(unittest.TestCase):
                 }
 
         self.client.delta_response.append(sync_data)
+        # add two files
+        self.client.get_file_response.append(StringIO())
+        self.client.get_file_response.append(StringIO())
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -269,6 +275,8 @@ class TestDropboxSync(unittest.TestCase):
                 }
 
         self.client.delta_response.append(sync_data)
+        self.client.get_file_response.append(StringIO())
+        self.client.get_file_response.append(StringIO())
 
         container = self.portal
         container_fti = container.getTypeInfo()

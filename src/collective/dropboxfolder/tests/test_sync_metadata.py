@@ -1,4 +1,5 @@
 import json
+from cStringIO import StringIO
 
 import unittest2 as unittest
 from zope.component import getUtility
@@ -69,6 +70,7 @@ class TestDropboxSyncMetadata(unittest.TestCase):
                 }
 
         self.client.delta_response.append(sync_data)
+        self.client.get_file_response.append(StringIO())
 
         container = self.portal
         container_fti = container.getTypeInfo()
@@ -76,11 +78,12 @@ class TestDropboxSyncMetadata(unittest.TestCase):
         if container_fti is not None and not container_fti.allowType(DROPBOX_FOLDER_TYPE):
             raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FOLDER_TYPE,))
 
-        folder = createContentInContainer(container,
-                                      DROPBOX_FOLDER_TYPE,
-                                      checkConstraints=False,
-                                      id="dropboxfolder",
-                                      )
+        folder = createContentInContainer(
+            container,
+            DROPBOX_FOLDER_TYPE,
+            checkConstraints=False,
+            id="dropboxfolder",
+        )
 
         processor = IDropboxSyncProcessor(folder)
         md = IDropboxSyncMetadata(folder)
