@@ -101,8 +101,10 @@ class DropboxSyncProcessor(object):
             folders = exploded_path[:-1]
             filename = exploded_path[-1]
 
-            if metadata is not None and metadata['is_dir']: continue  # skip directories for now
-            if folders: continue  # support just one level for now
+            if metadata is not None and metadata['is_dir']:
+                continue  # skip directories for now
+            if folders:
+                continue  # support just one level for now
 
             # Dictionary of Dropbox path to Plone ID - only really efficient for
             # the one level sync currently implemented.
