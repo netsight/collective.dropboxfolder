@@ -54,27 +54,26 @@ class DropboxSyncProcessor(object):
         delta = connector.delta()
 
         entries = delta.get('entries', [])
-        for entry in entries:
-            path = [x for x in entry[0].split('/') if x]
-            folders = path[:-1]
-            filename = path[-1]
+        for path,metadata in entries:
+            exploded_path = [x for x in path.split('/') if x]
+            folders = exploded_path[:-1]
+            filename = exploded_path[-1]
 
-            plone_id = normalize(filename)
-
-            if entry[1]['is_dir']: continue # skip directories for now
+            if metadata['is_dir']: continue # skip directories for now
             if folders: continue # support just one level for now
 
-            # TODO improve this check -- how to do efficiently as dropbox path may not contain
-            # URL safe characters so object may live in slightly different path in Plone to 
-            # Dropbox. We need to fix this anyway for path mapping
-            existing = None
-            if plone_id in container:
-                candidate = container[plone_id]
-                metadata = IDropboxMetadata(candidate).get()
-                if metadata['path'] == entry[0]:
-                    existing = candidate # not actually correct
+            # Dictionary of Dropbox path to Plone ID - only really efficient for
+            # the one level sync currently implemented.
+            existing = dict()
+            for ob in container.objectValues():
+                md = IDropboxMetadata(ob).get()
+                if md is not None:
+                    existing[md['path']] = ob
 
-            if existing is None:
+            if path in existing:
+                ob = existing[path]
+            else:
+                plone_id = normalize(filename)
                 container_fti = container.getTypeInfo()
                 if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
                     raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
@@ -83,11 +82,9 @@ class DropboxSyncProcessor(object):
                                               checkConstraints=False,
                                               id=normalize(filename),
                                               )
-            else:
-                ob = existing
 
-            # Update the metadata
-            IDropboxMetadata(ob).set(entry[1])
+            # Update the metadata with the latest
+            IDropboxMetadata(ob).set(metadata)
 
 
 
