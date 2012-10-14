@@ -138,6 +138,9 @@ class DropboxSyncProcessor(object):
                 if current_rev is None or current_rev != metadata['rev']:
                     logger.info('DropboxSyncProcessor: File has changed - updating data')
                     filedata = connector.get_file(lower_case_path).read()
+                    filename = filename_normalize(filename)
+                    if not isinstance(filename, unicode):
+                        filename = unicode(filename, 'utf-8')
                     db_file.file_data = NamedBlobFile(
                         filedata,
                         filename=filename,
