@@ -1,8 +1,10 @@
 from dropbox import session, client, rest
 
 from zope.interface import implements
+from zope.component import getUtility
 
 from collective.dropboxfolder.interfaces import IDropboxAuth
+from collective.dropboxfolder.interfaces import IDropboxClient
 from collective.dropboxfolder.storage import getStorage
 
 APP_KEY = 'i1sjpaxv3brl0oa'
@@ -85,7 +87,28 @@ class DropboxAuth(object):
             del storage['access_token_secret']
 
     def account_info(self):
-        box = self._box()
-        boxclient = client.DropboxClient(box)
+        boxclient = self.get_client()
         return boxclient.account_info()
 
+    def get_client(self):
+        box = self._box()
+        boxclient = client.DropboxClient(box)
+        return boxclient
+
+
+class DropboxClient(object):
+    implements(IDropboxClient)
+
+    def _client(self):
+        auth = getUtility(IDropboxAuth)
+        return auth.get_client()
+
+    def delta(self, cursor=None):
+        return self._client().delta(cursor)
+
+    def get_file(self, from_path, rev=None):
+        return self._client().get_file(from_path, rev)
+
+    def put_file(self, full_path, file_obj, overwrite=False, parent_rev=None):
+        return self._client().put_file(full_path, file_obj,
+                                       overwrite, parent_rev)
