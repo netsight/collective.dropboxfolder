@@ -292,3 +292,41 @@ class TestDropboxSync(unittest.TestCase):
         self.assertIsNotNone(metadata)
         self.assertEqual(1235, metadata['bytes'])
         self.assertEqual('362f', metadata['rev'])
+
+    def test_delete(self):
+
+        # first create a couple of files
+        self.test_multiple_files()
+        folder = self.portal['dropboxfolder']
+        self.assertEqual(2, len(folder))
+
+        processor = IDropboxSyncProcessor(folder)
+
+        sync_data = {
+                "entries": [
+                    ['/Somewhere_over_the_rainbow.txt', None],
+                    ],
+                "reset": False,
+                "cursor": "3",
+                "has_more": False,
+                }
+        self.client.delta_response.append(sync_data)
+        processor.sync()
+        self.assertEqual(1, len(folder))
+        self.assertTrue('magnum-opus.txt' in folder)
+        self.assertTrue(not 'somewhere_over_the_rainbow.txt' in folder)
+
+        sync_data = {
+                "entries": [
+                    ['/magnum-opus.txt', None],
+                    ],
+                "reset": False,
+                "cursor": "3",
+                "has_more": False,
+                }
+        self.client.delta_response.append(sync_data)
+        processor.sync()
+        self.assertEqual(0, len(folder))
+
+
+
