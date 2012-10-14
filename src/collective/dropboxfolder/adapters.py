@@ -91,7 +91,7 @@ class DropboxSyncProcessor(object):
             folders = exploded_path[:-1]
             filename = exploded_path[-1]
 
-            if metadata['is_dir']: continue # skip directories for now
+            if metadata is not None and metadata['is_dir']: continue # skip directories for now
             if folders: continue # support just one level for now
 
             # Dictionary of Dropbox path to Plone ID - only really efficient for
@@ -102,23 +102,27 @@ class DropboxSyncProcessor(object):
                 if md is not None:
                     existing[md['path']] = ob
 
-            if path in existing:
-                logger.info("DropboxSyncProcessor: Updating file for path %s", path)
-                db_file = existing[path]
-            else:
-                logger.info("DropboxSyncProcessor: Creating file for path %s", path)
-                plone_id = normalize(filename)
-                container_fti = container.getTypeInfo()
-                if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
-                    raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
-                db_file = createContentInContainer(container,
-                                              DROPBOX_FILE_TYPE,
-                                              checkConstraints=False,
-                                              id=normalize(filename),
-                                              )
+            if metadata is not None: # file has data
+                if path in existing:
+                    logger.info("DropboxSyncProcessor: Updating file for path %s", path)
+                    db_file = existing[path]
+                else:
+                    logger.info("DropboxSyncProcessor: Creating file for path %s", path)
+                    plone_id = normalize(filename)
+                    container_fti = container.getTypeInfo()
+                    if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
+                        raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
+                    db_file = createContentInContainer(container,
+                                                  DROPBOX_FILE_TYPE,
+                                                  checkConstraints=False,
+                                                  id=normalize(filename),
+                                                  )
 
-            # Update the metadata with the latest
-            IDropboxFileMetadata(db_file).set(metadata)
+                # Update the metadata with the latest
+                IDropboxFileMetadata(db_file).set(metadata)
+
+            if metadata is None and path in existing: # file deleted
+                container.manage_delObjects( [existing[path].getId()] )
 
         IDropboxSyncMetadata(container).set_delta_cursor(delta['cursor'])
         logger.info("DropboxSyncProcessor: complete (new cursor: %s)", delta['cursor'])
