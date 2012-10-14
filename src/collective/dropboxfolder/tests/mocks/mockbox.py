@@ -19,7 +19,7 @@ class Mockbox(object):
     get_file_response = deque()
     put_file_response = deque()
 
-    def delta(self):
+    def delta(self, cursor):
         return self.delta_response.popleft()
 
     def get_file(self):

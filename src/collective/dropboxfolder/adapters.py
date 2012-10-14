@@ -3,7 +3,7 @@ from zope.interface import implements
 from zope.component import adapts
 from zope.component import getUtility
 
-from BTrees import OOBTree
+from BTrees.OOBTree import OOBTree
 
 from zope.annotation import IAnnotations
 from plone.i18n.normalizer.interfaces import IURLNormalizer
@@ -52,13 +52,15 @@ class DropboxSyncMetadata(object):
 
     def _storage(self):
         annotations = IAnnotations(self.context)
-        return annotations.get(SYNC_METADATA_KEY, OOBTree)
+        return annotations.setdefault(SYNC_METADATA_KEY, default=OOBTree())
 
     def delta_cursor(self):
-        pass
+        storage = self._storage()
+        return storage.get('delta_cursor', None)
 
-    def set_delta_cursor(self):
-        pass
+    def set_delta_cursor(self, value):
+        storage = self._storage()
+        storage['delta_cursor'] = value
 
 
 class DropboxSyncProcessor(object):
@@ -75,7 +77,8 @@ class DropboxSyncProcessor(object):
         normalize = getUtility(IURLNormalizer).normalize
         container = self.context
 
-        delta = connector.delta()
+        cursor = IDropboxSyncMetadata(container).delta_cursor()
+        delta = connector.delta(cursor)
 
         entries = delta.get('entries', [])
         for path, metadata in entries:
@@ -95,17 +98,19 @@ class DropboxSyncProcessor(object):
                     existing[md['path']] = ob
 
             if path in existing:
-                ob = existing[path]
+                db_file = existing[path]
             else:
                 plone_id = normalize(filename)
                 container_fti = container.getTypeInfo()
                 if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
                     raise ValueError("Disallowed subobject type: %s" % (DROPBOX_FILE_TYPE,))
-                ob = createContentInContainer(container,
+                db_file = createContentInContainer(container,
                                               DROPBOX_FILE_TYPE,
                                               checkConstraints=False,
                                               id=normalize(filename),
                                               )
 
             # Update the metadata with the latest
-            IDropboxFileMetadata(ob).set(metadata)
+            IDropboxFileMetadata(db_file).set(metadata)
+
+        IDropboxSyncMetadata(container).set_delta_cursor(delta['cursor'])
