@@ -28,8 +28,18 @@ class TestDropboxSync(unittest.TestCase):
 
         # Override the default sync utility
         gsm = getGlobalSiteManager()
+        self.old_client = getUtility(IDropboxClient)
+        gsm.unregisterUtility(self.old_client, IDropboxClient)
+        # Register our mocked version
         self.client = Mockbox()
         gsm.registerUtility(self.client, IDropboxClient)
+
+    def tearDown(self):
+        # remove our mocked utility
+        gsm = getGlobalSiteManager()
+        gsm.unregisterUtility(self.client, IDropboxClient)
+        # re-add the original
+        gsm.registerUtility(self.old_client, IDropboxClient)
 
     def test_new_file(self):
         container = self.portal
