@@ -1,3 +1,4 @@
+import logging
 
 from zope.interface import implements
 from zope.component import adapts
@@ -22,6 +23,8 @@ from collective.dropboxfolder.content.config import DROPBOX_FILE_TYPE
 
 FILE_METADATA_KEY = "collective.dropboxfolder.metadata"
 SYNC_METADATA_KEY = "collective.dropboxfolder.metadata"
+
+logger = logging.getLogger("collective.dropboxfolder")
 
 
 class DropboxFileMetadata(object):
@@ -72,12 +75,14 @@ class DropboxSyncProcessor(object):
         self.context = context
 
     def sync(self):
+        logger.info("DropboxSyncProcessor: starting...")
         connector = getUtility(IDropboxClient)
 
         normalize = getUtility(IURLNormalizer).normalize
         container = self.context
 
         cursor = IDropboxSyncMetadata(container).delta_cursor()
+        logger.info("DropboxSyncProcessor: current cursor %s", cursor)
         delta = connector.delta(cursor)
 
         entries = delta.get('entries', [])
@@ -98,8 +103,10 @@ class DropboxSyncProcessor(object):
                     existing[md['path']] = ob
 
             if path in existing:
+                logger.info("DropboxSyncProcessor: Updating file for path %s", path)
                 db_file = existing[path]
             else:
+                logger.info("DropboxSyncProcessor: Creating file for path %s", path)
                 plone_id = normalize(filename)
                 container_fti = container.getTypeInfo()
                 if container_fti is not None and not container_fti.allowType(DROPBOX_FILE_TYPE):
@@ -114,3 +121,4 @@ class DropboxSyncProcessor(object):
             IDropboxFileMetadata(db_file).set(metadata)
 
         IDropboxSyncMetadata(container).set_delta_cursor(delta['cursor'])
+        logger.info("DropboxSyncProcessor: complete (new cursor: %s)", delta['cursor'])
