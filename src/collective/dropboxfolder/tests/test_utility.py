@@ -1,5 +1,6 @@
 import unittest2 as unittest
 from zope.component import getUtility
+from zope.interface.verify import verifyObject
 
 from collective.dropboxfolder.testing import\
     COLLECTIVE_DROPBOXFOLDER_INTEGRATION
@@ -14,6 +15,10 @@ class TestDropboxAuth(unittest.TestCase):
     def setUp(self):
         self.app = self.layer['app']
         self.portal = self.layer['portal']
+
+    def test_interface(self):
+        auth = getUtility(IDropboxAuth)
+        self.assertTrue(verifyObject(IDropboxAuth, auth))
 
     def test_app_secret(self):
         """ get and set the app secret """
